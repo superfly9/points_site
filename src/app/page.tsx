@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { DialogDescription } from "@radix-ui/react-dialog";
 import { useState } from "react";
 
 type ModalType = "login" | "profile_check" | null;
@@ -26,6 +27,8 @@ interface FormData {
   password: string;
   name: string;
 }
+
+const MAIN_INPUT_MAX_LENGTH = 5;
 
 export default function Home() {
   const [modalType, setModalType] = useState<ModalType>(null);
@@ -61,6 +64,7 @@ export default function Home() {
         {label}
       </Label>
       <Input
+        maxLength={MAIN_INPUT_MAX_LENGTH}
         id={id}
         value={formData[id]}
         onChange={(e) => handleInputChange(e, isNumericOnly)}
@@ -90,7 +94,10 @@ export default function Home() {
           <DialogContent>
             {modalType === "profile_check" && (
               <>
-                <DialogHeader>회원정보 확인 모달</DialogHeader>
+                <DialogHeader>
+                  <DialogTitle>회원정보 확인</DialogTitle>
+                  <DialogDescription>회원정보를 입력해주세요</DialogDescription>
+                </DialogHeader>
                 <div className="grid gap-4 py-4">
                   {renderFormField("name", "이름")}
                   {renderFormField("employeeNumber", "사번", true)}
@@ -99,8 +106,12 @@ export default function Home() {
             )}
             {modalType === "login" && (
               <>
-                <DialogHeader>로그인 모달</DialogHeader>
-                <DialogTitle>Title</DialogTitle>
+                <DialogHeader>
+                  <DialogTitle>로그인</DialogTitle>
+                  <DialogDescription>
+                    계정 정보를 입력해주세요
+                  </DialogDescription>
+                </DialogHeader>
                 <div className="grid gap-4 py-4">
                   {renderFormField("employeeNumber", "사번", true)}
                   {renderFormField("password", "비밀번호")}
