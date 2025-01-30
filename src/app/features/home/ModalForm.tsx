@@ -2,8 +2,6 @@ import React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import {
-  Dialog,
-  DialogContent,
   DialogFooter,
   DialogHeader,
   DialogClose,
@@ -49,6 +47,11 @@ const MODAL_CONFIG = {
 } as const;
 
 export type ModalType = keyof typeof MODAL_CONFIG | null;
+type ModalConfigType = typeof MODAL_CONFIG;
+
+type ModalFormData<T extends Exclude<ModalType, null>> = z.infer<
+  ModalConfigType[T]["schema"]
+>;
 
 const formSchema = z.object({
   employeeNumber: z.string().min(1, "사번을 입력해주세요"),
@@ -64,12 +67,12 @@ interface Props {
 
 function ModalForm({ modalType }: Props) {
   const config = MODAL_CONFIG[modalType];
-  const form = useForm({
+  const form = useForm<ModalFormData<typeof modalType>>({
     defaultValues: Object.fromEntries(
       config.fields.map((field) => [field.name, ""])
     ) as IFormData,
   });
-  const onSubmit: SubmitHandler<IFormData> = (data) => {
+  const onSubmit: SubmitHandler<ModalFormData<typeof modalType>> = (data) => {
     console.log("[data]:", data);
   };
 
