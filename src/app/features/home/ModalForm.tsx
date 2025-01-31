@@ -53,14 +53,6 @@ type ModalFormData<T extends Exclude<ModalType, null>> = z.infer<
   ModalConfigType[T]["schema"]
 >;
 
-const formSchema = z.object({
-  employeeNumber: z.string().min(1, "사번을 입력해주세요"),
-  password: z.string().min(1, "비밀번호를 입력해주세요"),
-  name: z.string().min(1, "이름을 입력햐주세요."),
-  birthday: z.string().min(1, "생년월일을 입력해주세요."),
-});
-
-interface IFormData extends z.infer<typeof formSchema> {}
 interface Props {
   modalType: Exclude<ModalType, null>;
 }
@@ -70,7 +62,8 @@ function ModalForm({ modalType }: Props) {
   const form = useForm<ModalFormData<typeof modalType>>({
     defaultValues: Object.fromEntries(
       config.fields.map((field) => [field.name, ""])
-    ) as IFormData,
+    ) as ModalFormData<typeof modalType>,
+    resolver: zodResolver(MODAL_CONFIG[modalType].schema),
   });
   const onSubmit: SubmitHandler<ModalFormData<typeof modalType>> = (data) => {
     console.log("[data]:", data);
@@ -105,17 +98,17 @@ function ModalForm({ modalType }: Props) {
                 }}
               />
             ))}
+            <DialogFooter className="mt-3">
+              <DialogClose asChild>
+                <>
+                  <Button type="button" variant="secondary" className="mr-2">
+                    닫기
+                  </Button>
+                  <Button type="submit">확인하기</Button>
+                </>
+              </DialogClose>
+            </DialogFooter>
           </form>
-          <DialogFooter className="mt-3">
-            <DialogClose asChild>
-              <>
-                <Button type="button" variant="secondary" className="mr-2">
-                  닫기
-                </Button>
-                <Button type="submit">확인하기</Button>
-              </>
-            </DialogClose>
-          </DialogFooter>
         </Form>
       </div>
     </>
